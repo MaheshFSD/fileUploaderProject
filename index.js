@@ -20,14 +20,34 @@ connectToMongoDB(process.env.MONGODBURL)
 })
 .catch(err => console.log('err in connecting DB - ', err));
 
-app.post('/create', upload.single('avatar'), (req,res) => {
-    console.log(req.body, '======== body =======');
-    console.log(req.file, '======== file =======');
-    console.log(req.files, '======== files =======');
+
+// single file upload
+// app.post('/create', upload.single('avatar'), (req,res) => {
+//     console.log(req.body, '======== body =======');
+//     console.log(req.file, '======== file =======');
+//     console.log(req.files, '======== files =======');
+//     const {name, avatar, email} = req.body;
+//     User.create({
+//         name,
+//         avatar: req.file.path,
+//         email
+//     })
+//     console.log(name, avatar, ' -------- avatar ----- ');
+//     res.send('I am sending file....');
+// })
+
+// multi file upload...
+app.post('/create', upload.array('avatar[]'), (req,res) => {
+    // console.log(req.body, '======== body =======');
+    // console.log(req.file, '======== file =======');
+    // console.log(req.files, '======== files =======');
     const {name, avatar, email} = req.body;
+    let path = "";
+    req.files.forEach(file => path+= file.path+',');
+    path = path.substring(0, path.lastIndexOf(','));;
     User.create({
         name,
-        avatar: req.file.path,
+        avatar: path,
         email
     })
     console.log(name, avatar, ' -------- avatar ----- ');
@@ -37,6 +57,6 @@ app.post('/create', upload.single('avatar'), (req,res) => {
 app.get('/:email', async (req,res) => {
     const email = req.params.email;
     const user = await User.findOne({email});
-    console.log(user, ' ------- i am user -----');
+    // console.log(user, ' ------- i am user -----');
     res.send(user.avatar);
 }) 
