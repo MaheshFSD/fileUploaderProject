@@ -11,6 +11,7 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
+app.use('/uploads', express.static('uploads'))
 
 connectToMongoDB(process.env.MONGODBURL)
 .then(() => {
@@ -33,9 +34,9 @@ app.post('/create', upload.single('avatar'), (req,res) => {
     res.send('I am sending file....');
 })
 
-app.get('/email', (req,res) => {
+app.get('/:email', async (req,res) => {
     const email = req.params.email;
-    const user = User.findOne({email});
+    const user = await User.findOne({email});
     console.log(user, ' ------- i am user -----');
     res.send(user.avatar);
 }) 
