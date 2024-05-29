@@ -2,12 +2,15 @@ const express = require('express');
 const multer = require('multer');
 const {connectToMongoDB} = require('./config/connection');
 const dotenv = require('dotenv');
-
+const upload = require('./middlewares/upload');
+const User = require('./models/user.model');
 
 const PORT = 4000;
 dotenv.config();
 
 const app = express();
+app.use(express.json());
+app.use(express.urlencoded({extended: false}));
 
 connectToMongoDB(process.env.MONGODBURL)
 .then(() => {
@@ -16,3 +19,23 @@ connectToMongoDB(process.env.MONGODBURL)
 })
 .catch(err => console.log('err in connecting DB - ', err));
 
+app.post('/create', upload.single('avatar'), (req,res) => {
+    console.log(req.body, '======== body =======');
+    console.log(req.file, '======== file =======');
+    console.log(req.files, '======== files =======');
+    const {name, avatar, email} = req.body;
+    User.create({
+        name,
+        avatar: req.file.path,
+        email
+    })
+    console.log(name, avatar, ' -------- avatar ----- ');
+    res.send('I am sending file....');
+})
+
+app.get('/email', (req,res) => {
+    const email = req.params.email;
+    const user = User.findOne({email});
+    console.log(user, ' ------- i am user -----');
+    res.send(user.avatar);
+}) 
