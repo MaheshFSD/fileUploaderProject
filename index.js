@@ -59,4 +59,4 @@ app.get('/:email', async (req,res) => {
     const user = await User.findOne({email});
     // console.log(user, ' ------- i am user -----');
     res.send(user.avatar);
-}) 
+})  
