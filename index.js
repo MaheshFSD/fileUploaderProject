@@ -4,9 +4,9 @@ const {connectToMongoDB} = require('./config/connection');
 const dotenv = require('dotenv');
 const upload = require('./middlewares/upload');
 const User = require('./models/user.model');
-
-const PORT = 4000;
 dotenv.config();
+ 
+const PORT = process.env.PORT || 4000;
 
 const app = express();
 app.use(express.json());
